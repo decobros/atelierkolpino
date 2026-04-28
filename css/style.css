@@ -1,0 +1,604 @@
+/* ===============================
+   БАЗОВЫЕ СБРОСЫ И РАСТЯЖКА ЭКРАНА
+=============================== */
+/* Обнуление базовых отступов для всех элементов системы */
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+
+html { 
+    min-height: 100%; 
+    height: -webkit-fill-available; 
+}
+
+body { 
+    background-color: #f4f4f4; color: #333; 
+    overscroll-behavior-y: auto; 
+    display: flex; flex-direction: column; 
+    min-height: 100%; 
+    min-height: -webkit-fill-available; 
+}
+
+:root {
+    --brand-gradient: linear-gradient(90deg, #FF3900 0%, #FF8C00 100%);
+    --hover-color: #f0f0f0;
+    --brand-text-color: #FF3900;
+    --brand-rgb: 255, 69, 0; 
+}
+a { text-decoration: none; color: inherit; }
+.mobile-tab-bar, .contact-sheet-overlay, .contact-sheet { display: none; }
+/* ===============================
+   ЭКРАН ПРИВЕТСТВИЯ (SPLASH)
+=============================== */
+.splash-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--brand-gradient); display: flex; justify-content: center; align-items: center; z-index: 9990; transition: opacity 0.5s ease; }
+.splash-content { display: flex; flex-direction: column; align-items: center; }
+/* Отступ снизу от логотипа на стартовом экране */
+.splash-logo-img { width: 220px; height: auto; margin-bottom: 20px; display: block; }
+/* Внутренние отступы, размер шрифта, толщина шрифта и радиус кнопки входа */
+.enter-btn { width: 220px; padding: 15px 0; margin-bottom: 0px; font-size: 18px; border-radius: 30px; border: none; background: white; color: var(--brand-text-color); cursor: pointer; font-weight: bold; text-align: center; }
+/* График под логотипом на стартовом экране */
+.splash-schedule-img { width: 220px; height: auto; margin-bottom: 20px; display: block; }
+/* ===============================
+   УНИВЕРСАЛЬНЫЙ ХЕДЕР (STICKY)
+=============================== */
+.main-header { 
+    position: sticky; 
+    top: 0; 
+    z-index: 1000; 
+    background: var(--brand-gradient); 
+    width: 100%;
+}
+/* Боковые внутренние отступы шапки (хедера) на ПК */
+.header-container { width: 100%; max-width: 1470px; margin: 0 auto; padding: 0 15px; display: flex; flex-direction: column; }
+/* Размер шрифта и средняя толщина (500) для контактов в самом верху */
+.header-top { height: 35px; display: flex; justify-content: space-between; align-items: center; font-size: 14px; font-weight: 400; color: rgba(255, 255, 255, 1); }
+.top-menu { flex-grow: 1; display: flex; justify-content: center; }
+/* Расстояние между ссылками в верхнем меню на ПК */
+.top-menu ul { display: flex; list-style: none; gap: 20px; }
+.top-menu a { color: white; transition: opacity 0.2s; } .top-menu a:hover { opacity: 0.8; }
+.contact-phone { white-space: nowrap; text-align: right; }
+/* Оступы между логотипом и строкой поиска, а также отступ снизу хедера */
+.header-bottom { height: 70px; display: flex; align-items: center; gap: 20px; padding-bottom: 10px; }
+/* Расстояние между кнопкой бургера и логотипом */
+.logo-and-burger { display: flex; align-items: center; gap: 15px; width: 210px; flex-shrink: 0; }
+.burger-btn { width: 30px; height: 20px; background: transparent; border: none; cursor: pointer; position: relative; flex-shrink: 0; }
+/* Радиус закругления линий значка бургера */
+.burger-lines, .burger-lines::before, .burger-lines::after { content: ''; display: block; width: 100%; height: 3px; background: white; border-radius: 2px; position: absolute; transition: 0.3s; }
+.burger-lines { top: 50%; transform: translateY(-50%); }
+.burger-lines::before { top: -8px; } .burger-lines::after { bottom: -8px; }
+.burger-btn.active .burger-lines { background: transparent; }
+.burger-btn.active .burger-lines::before { top: 0; transform: rotate(45deg); }
+.burger-btn.active .burger-lines::after { top: 0; transform: rotate(-45deg); }
+.header-logo-img { height: 60px; max-width: 165px; object-fit: contain; display: block; }
+/* ПОИСК */
+/* Выравнивание по центру блока поиска ПК */
+.search-wrapper { flex-grow: 1; position: relative; display: flex; align-items: center; justify-content: center; max-width: 600px; margin: 0 auto; }
+/* Радиус строки поиска, поля для ввода текста и размер шрифта внутри нее */
+.search-input { width: 100%; height: 34px; border-radius: 17px; border: none; padding: 0 20px; font-size: 16px; outline: none; }
+/* Радиус и внутренние отступы выпадающего списка окна поиска */
+.search-dropdown { display: none; position: absolute; top: 50px; left: 0; width: 100%; background: white; border-radius: 22px; box-shadow: 0 10px 20px rgba(0,0,0,0.1); padding: 15px; }
+/* Толщина слова "Популярные запросы" и отступ снизу от него */
+.search-title { font-weight: bold; margin-bottom: 10px; color: #666; }
+/* Отступы сверху и снизу для каждой строки результатов поиска */
+.popular-queries li { list-style: none; padding: 0px 0; cursor: pointer; transition: color 0.1s; }
+.popular-queries li:hover { color: var(--brand-text-color); }
+/* ===============================
+   САЙДБАР ДЛЯ ПК
+=============================== */
+.overlay { position: fixed; top: 105px; left: 0; width: 100%; height: calc(100% - 105px); height: calc(100dvh - 105px); background: rgba(0,0,0,0.4); z-index: 1040; opacity: 0; visibility: hidden; transition: 0.2s; }
+.overlay.active { opacity: 1; visibility: visible; }
+.sidebar-wrapper { position: fixed; top: 105px; left: -100%; bottom: 0; width: 210px; display: flex; z-index: 1050; background: white; visibility: hidden; transition: left 0.2s ease-out, visibility 0s linear 0.2s; }
+.sidebar-wrapper.active { left: 0; visibility: visible; transition: left 0.2s ease-out, visibility 0s linear 0s; }
+.sidebar-wrapper:not(.active) .sidebar-level-2 { display: none !important; }
+.sidebar-level-1 { width: 100%; height: 100%; background: white; box-shadow: 2px 0 10px rgba(0,0,0,0.1); z-index: 2; overflow-y: auto; position: relative; }
+/* Внутренние отступы основного меню сайдбара */
+.sidebar-level-1 ul { list-style: none; padding: 15px 0; }
+/* Внутренние отступы и размер шрифта категорий меню в сайдбаре */
+.sidebar-level-1 li { padding: 0px 15px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-size: 13px; transition: background 0.1s; }
+.sidebar-level-1 li:hover { background: var(--hover-color); color: var(--brand-text-color); }
+/* Размер стрелочки вправо в меню сайдбара */
+.arrow { font-size: 20px; color: #aaa; }
+.sidebar-level-2 { width: 320px; height: 100%; background: #fdfdfd; position: absolute; left: -110px; top: 0; z-index: 1; box-shadow: 3px 0 10px rgba(0,0,0,0.05); overflow-y: auto; transition: left 0.2s ease-out; }
+.sidebar-level-2.active { left: 210px; }
+/* Внутренние отступы выпадающего подменю сайдбара */
+.submenu { display: none; padding: 15px; }
+/* Размер шрифта, толщина и отступ снизу заголовка подменю */
+.submenu-title { font-size: 13px; font-weight: bold; margin-bottom: 15px; color: #333; }
+.submenu ul { list-style: none; }
+/* Отступы снизу для пунктов выпадающего подменю */
+.submenu li { margin-bottom: 12px; }
+/* Размер шрифта самих ссылок в подменю */
+.submenu a { text-decoration: none; color: #444; font-size: 12px; display: block; }
+.submenu a:hover { color: var(--brand-text-color); }
+/* ===============================
+   ОСНОВНОЙ КОНТЕНТ И ВРАППЕРЫ
+=============================== */
+/* Внутренние отступы главной страницы ПК (Сверху 6px, по бокам 0px) */
+.content-wrapper { flex-grow: 1; width: 100%; max-width: 1440px; margin: 0 auto; padding: 6px 0px; } 
+/* Внутренние отступы страницы товара ПК (со всех сторон 6px, бока 0px) */
+.store-wrapper   { flex-grow: 1; width: 100%; max-width: 1440px; margin: 0 auto; padding: 6px 0px; } 
+/* Внутренние отступы станицы прайс-листа ПК (Сверху 6px, низ 20px) */
+.price-page-wrapper { flex-grow: 1; width: 100%; max-width: 860px; margin: 0 auto; padding: 6px 20px 20px 20px; } 
+/* БАННЕРЫ (Десктоп 12:1) */
+.mobile-banners-section { display: none; } 
+/* Радиус закругления баннеров на ПК и нижний отступ до сетки товаров */
+.desktop-banners-section { position: relative; width: 100%; aspect-ratio: 12 / 1; border-radius: 16px; overflow: hidden; margin-bottom: 6px; background: #ccc; }
+.d-banner-slide { position: absolute; inset: 0; opacity: 0; transition: opacity 0.8s ease; display:flex; align-items:center; justify-content:center; }
+.d-banner-slide.active { opacity: 1; z-index: 1; }
+.d-banner-slide img { width: 100%; height: 100%; object-fit: cover; }
+/* Радиус заглушки пустого баннера на ПК и толщина шрифта (bold) */
+.banner-placeholder { width: 100%; height: 100%; background: #cccccc; color: #555; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; border-radius: 16px; }
+.banner-placeholder span { font-size: 1.5vw; font-weight: bold; } 
+/* Отступ сверху для порядкового номера пустого баннера */
+.banner-placeholder .b-number { font-size: 2vw; opacity: 0.3; margin-top: 5px; }
+/* СЕТКА ТОВАРОВ ПК */
+/* Расстояние между карточками товаров на ПК (gap: 6px) */
+.product-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px 6px; }
+/* Радиус углов карточки товара ПК */
+.product-card { background: white; border-radius: 16px; overflow: hidden; cursor: pointer; display: flex; flex-direction: column; transition: box-shadow 0.2s; }
+.product-card:hover { box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+.card-img-wrapper { position: relative; width: 100%; aspect-ratio: 2 / 3; background: #eaeaea; }
+.prod-img { position: absolute; top:0; left:0; width:100%; height:100%; object-fit: cover; opacity: 0; transition: opacity 0.2s ease; }
+.prod-img.active { opacity: 1; z-index: 1; }
+/* Внутренние отступы текстовой информации карточки товара */
+.card-info { padding: 12px; display: flex; flex-direction: column; }
+/* Отступ под названием карточки товара до цены (5px) и между старой зачеркнутой ценой и новой (gap: 6px) */
+.card-price-wrap { order: 1; display: flex; align-items: baseline; gap: 6px; flex-wrap: wrap; margin-bottom: 5px; }
+/* Размер шрифта, толщина (bold) и отступ снизу цены в карточке */
+.card-price { font-size: 18px; font-weight: bold; margin-bottom: 0px; }
+/* Размер и толщина шрифта (нормальный) старой перечеркнутой цены в карточке */
+.card-price.old-price { font-size: 14px; text-decoration: line-through; color: #999; font-weight: normal; }
+.card-price.new-price { color: #4CAF50 !important; }
+/* Для страницы товара store.php меняй 16px, чтобы увеличить или уменьшить отступ между цнами */
+.product-price-big.new-price { color: #4CAF50; margin-right: 6px; }
+.product-price-big.old-price { font-size: 24px; text-decoration: line-through; color: #999; font-weight: normal; }
+/* Размер шрифта и вес (нормальный, 400) названия карточки товара, высота строки (line-height) */
+.card-title { order: 2; line-height: 1.3; font-size: 14px; font-weight: 400; color: #555; margin-bottom: 0; }
+.mobile-catalog-title { display: none; } 
+.mobile-mandarin-nav { display: none; } 
+.mobile-mega-contact-btn { display: none; } 
+/* ===============================
+   ПРАЙС-ЛИСТ (Аккордеон)
+=============================== */
+/* Шрифт, отступ снизу и толщина(600) заголовка "Прайс-лист на услуги" */
+.page-title { text-align: center; font-size: 22px; font-weight: 600; color: #333; margin-bottom: 6px; }
+/* Радиус блоков категорий (аккордеонов) и отступ между ними в Прайсе */
+.price-accordion { background: white; border-radius: 16px; margin-bottom: 6px; box-shadow: 0 2px 5px rgba(0,0,0,0.03); overflow: hidden; scroll-margin-top: 100px; }
+/* Внутренние отступы, шрифт и толщина плашки открытия категории */
+.price-accordion summary { padding: 14px 18px; font-size: 15px; font-weight: bold; color: #333; cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; transition: background 0.2s; }
+.price-accordion summary::-webkit-details-marker { display: none; } 
+.price-accordion summary:hover { background: var(--hover-color); }
+/* Размер шрифта оранжевого треугольника (стрелки) на плашке аккордеона */
+.price-accordion summary::after { content: '▼'; font-size: 11px; color: var(--brand-text-color); transition: transform 0.3s ease; }
+.price-accordion[open] summary::after { transform: rotate(180deg); }
+.price-accordion[open] summary { border-bottom: 1px solid #eee; }
+.price-accordion.popular-accordion summary { background: var(--brand-gradient); color: white; }
+.price-accordion.popular-accordion summary::after { color: white; }
+/* Обнуление базовых отступов для раскрывающегося списка услуг */
+.service-list { list-style: none; padding: 0; margin: 0; }
+/* Внутриние отступы строки конкретной услуги в прайс листе */
+.service-row-link { display: flex; justify-content: space-between; align-items: center; padding: 4px 18px; border-bottom: 1px solid #f5f5f5; text-decoration: none; color: #444; transition: background 0.1s; }
+.service-row-link:hover { background: #fafafa; }
+.service-row-link:hover .service-name { 
+    color: var(--brand-text-color); 
+}
+.service-list li:last-child .service-row-link { border-bottom: none; }
+/* Шрифт и отступ справа для названия услуги, чтобы не наезжало на цену */
+.service-name { flex-grow: 1; font-size: 14px; padding-right: 15px; line-height: 1.3; }
+/* Отступ между текстом цены и кнопкой "Записаться" */
+.service-right { display: flex; align-items: center; gap: 12px; }
+/* Шрифт и толщина цены в строке услуги */
+.service-price { 
+    font-weight: bold; 
+    font-size: 15px; 
+    color: var(--brand-text-color); 
+    white-space: nowrap; 
+}
+/* Размер шрифта, толщина(600), отступы поля и радиус для кнопки "Записаться" в прайс-листе */
+.book-btn { background: #F0F0F0; color: #555; font-size: 12px; font-weight: 600; padding: 6px 12px; border-radius: 16px; border: none; cursor: pointer; transition: transform 0.1s, background 0.2s; }
+.book-btn:hover { background: #E8E8E8; transform: scale(1.05); }
+/* Внутренний отступ и толщина текста-"заглушки" (Ничего не найдено) в прайсе */
+.nomatch-msg { display: none; text-align: center; padding: 20px; color: #888; font-weight: bold; }
+/* ===============================
+   КАРТОЧКА ТОВАРА (STORE.PHP)
+=============================== */
+/* Расстояние между блоком галереи фотографий и блоком описания на ПК */
+.product-page-layout { display: flex; gap: 0px; align-items: flex-start; }
+/* Галерея ПК */
+/* Расстояние между главным фото и колонкой миниатюр (6px) */
+.product-gallery { 
+    flex: 1; 
+    max-width: 1040px; 
+    width: 100%; 
+    display: flex; 
+    gap: 20px; 
+    height: calc(100dvh - 145px); 
+    max-height: 900px;
+    min-height: 480px; 
+    align-items: flex-start; 
+}
+/* Радиус закругления главной фотографии товара на ПК */
+.main-img-box { 
+    position: relative; 
+    height: 100%;
+    width: auto; 
+    aspect-ratio: 2 / 3; 
+    background: #eee; 
+    border-radius: 16px; 
+    overflow: hidden; 
+    flex-shrink: 1;
+    max-width: calc(100% - 110px); 
+}
+.main-img-box img { 
+    position: absolute; 
+    top: 0; left: 0; inset: 0; 
+    width: 100%; height: 100%; 
+    object-fit: cover;
+    opacity: 0; 
+    visibility: hidden; 
+    z-index: 1; 
+    transition: opacity 0.5s ease, visibility 0.5s; 
+}
+.main-img-box img:first-child { 
+    position: relative; 
+    height: auto;
+    display: block;
+}
+.main-img-box img.active { 
+    opacity: 1 !important; 
+    visibility: visible; 
+    z-index: 2; 
+}
+/* Вертикальные тумбы ПК (справа от глав фото) */
+.gallery-thumbs-vertical { 
+    display: flex; 
+    flex-direction: column; 
+    height: 100%; 
+    align-items: flex-start; 
+    flex-shrink: 0; 
+}
+.thumbs-viewport { 
+    height: 100%; 
+    overflow: hidden; 
+    display: flex; 
+    flex-direction: column; 
+}
+/* Отступы между самими миниатюрами (превью) в колонке справа от фото (6px) */
+.thumbs-inner { 
+    display: flex; 
+    flex-direction: column; 
+    height: 100%; 
+    gap: 6px; 
+    transition: transform 0.3s ease; 
+}
+/* Радиус закругления миниатюр (превью) (8px) */
+.gallery-thumb-v { 
+    height: calc((100% - 60px) / 7); 
+    aspect-ratio: 2 / 3; 
+    flex-shrink: 0; 
+    border-radius: 16px; 
+    overflow: hidden; 
+    cursor: pointer; 
+    border: 2px solid transparent; 
+    transition: border-color 0.2s, opacity 0.1s; 
+    background: #eaeaea; 
+}
+.gallery-thumb-v:hover { border-color: var(--brand-text-color); }
+.gallery-thumb-v.active { border-color: var(--brand-text-color); }
+.gallery-thumb-v img { width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
+/* Отступ сверху для кнопки-стрелки скролла вниз под миниатюрами (10px) */
+.thumb-scroll-down { 
+    display: none; 
+    width: 100%; 
+    height: 25px; 
+    margin-top: 10px; 
+    flex-shrink: 0;
+    background: center / contain no-repeat;
+    background-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 24 24" fill="%23FF3900" xmlns="http://www.w3.org/2000/svg"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg>');
+    cursor: pointer; 
+    transition: transform 0.2s; 
+}
+.thumb-scroll-down:hover { transform: scale(1.1); }
+.thumb-scroll-down.visible { display: block; }
+/* Инфо блок */
+.product-details { flex: 1; min-width: 350px; max-width: 720px; }
+/* Размер шрифта, толщина и нижний отступ названия товара на странице (ПК) */
+.product-title { font-size: 28px; font-weight: 600; margin-bottom: 15px; color: #333; }
+/* Размер увеличенного жирного шрифта главной цены (и отступ под ней) на странице ПК */
+.product-price-big { font-size: 36px; font-weight: 700; color: var(--brand-text-color); margin-bottom: 25px; }
+/* Отступы параметров (рост, размер) от текста и друг от друга */
+.product-params-row { display: flex; gap: 20px; margin-bottom: 25px; align-items: center; }
+/* Отступ между словом "Размер:" и его значением "44-46" */
+.param-box { display: flex; align-items: center; gap: 8px; }
+/* Размер шрифта самого слова свойства (Слово: Размер, или Слово: Рост) */
+.param-label { font-size: 14px; color: #888; }
+/* Внутренние отступы, жирность и радиус рамки выдаваемого значения размера (Например: 42-44) */
+.param-val { display: inline-block; padding: 6px 12px; border: 2px solid #ccc; border-radius: 16px; font-weight: bold; color: #444; }
+/* Размер шрифта и отступ описания товара */
+.product-desc { font-size: 16px; line-height: 1.6; color: #555; margin-bottom: 25px; white-space: pre-line; }
+/* Кнопки контактов (для ПК) */
+/* Отступ между кнопками мессенджеров на странице ПК (10px) */
+.desktop-contacts { display: flex; flex-direction: column; gap: 10px; }
+/* Внутренние отступы (высота/ширина), рамка 30px, размер 15px и жирность текста внутри кнопок мессенджеров */
+.contact-btn { display: flex; align-items: center; justify-content: flex-start; gap: 12px; width: 230px; padding: 12px 20px; border-radius: 30px; text-decoration: none; font-size: 15px; font-weight: bold; color: white; transition: transform 0.1s, opacity 0.2s; }
+.contact-btn:active { transform: scale(0.98); }
+.contact-btn svg { width: 22px; height: 22px; flex-shrink: 0; }
+.btn-call { background: #333333; } .btn-tg { background: #2AABEE; } .btn-wa { background: #25D366; } 
+.btn-max { background: linear-gradient(90deg, #4C6AFE 0%, #9F4ADB 100%); box-shadow: 0 4px 12px rgba(159, 74, 219, 0.3); }
+/* Мобильный скролл-контейнер для товара (скрыт на ПК) */
+.mobile-gallery-swipe { display: none; }
+/* Отступы сверху и снизу от серой ограничительной линии (перед Каталогом других товаров на страницах товаров для store, promo, services) */
+.similar-products-block { 
+    margin-top: 30px; 
+    border-top: 1px solid #e0e0e0; 
+    padding-top: 30px; 
+}
+/* ===============================
+   УНИВЕРСАЛЬНЫЙ ПОДВАЛ 
+=============================== */
+/* Отступ подвала от основного контента сайта (30px сверху) */
+.site-footer { background: #fdfdfd; width: 100%; border-top: 1px solid #ebebeb; margin-top: 30px; z-index: 10; position: relative; }
+/* Внутренние боковые отступы (0px) подвала для ПК */
+.footer-container { max-width: 1440px; margin: 0 auto; padding: 0 25px; }
+/* Внутренние отступы верхней части подвала и отступ между блоками (gap: 20px) */
+.footer-top { display: flex; justify-content: space-between; align-items: center; padding: 25px 0; gap: 20px; }
+/* Размер шрифта, толщина (500) и отступ снизу заголовка "Ателье Татьяны Усановой" в подвале */
+.footer-contacts h4 { font-size: 15px; font-weight: 500; color: #111; margin-bottom: 10px; }
+/* Размер шрифта, отступ снизу и отступ между иконкой и текстом (gap: 5px) для строк контактов */
+.footer-contact-item { font-size: 13px; color: #777; margin-bottom: 6px; display: flex; align-items: center; gap: 5px; transition: color 0.2s; }
+.footer-contact-item:hover, .footer-contact-item a:hover { color: #333; }
+/* Отступ сверху для ссылки на Телеграм в подвале */
+.footer-tele { margin-top: 5px; }
+/* Жестко глушим скроллбары в iframe Яндекса, задаем его радиус (16px) */
+.footer-badge iframe { width: 150px; height: 50px; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.12); display: block; border: none; overflow: hidden; }
+.mobile-store-badge { display: none; }
+/* Внутренние отступы и размер шрифта (12px) самой нижней строки с копирайтом */
+.footer-bottom { text-align: center; padding: 15px 0; border-top: 1px solid #e0e0e0; font-size: 12px; color: #999; text-shadow: 1px 1px 1px rgba(255,255,255,1), -1px -1px 1px rgba(0,0,0,0.06); }
+/* ЗАГЛУШКА ПОВОРОТА ЭКРАНА */
+.orientation-warning { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--brand-gradient); z-index: 10000; justify-content: center; align-items: center; text-align: center; color: white; }
+/* Размер и толщина шрифта (500) сообщения о повороте экрана */
+.warning-content p { font-size: 18px; font-weight: 500; line-height: 1.5; }
+/* Отступ снизу от иконки поворота (20px) */
+.rotate-icon { width: 60px; height: 60px; margin-bottom: 20px; animation: spin 2s infinite linear; }
+@keyframes spin { 100% { transform: rotate(360deg); } }
+/* Скрытие элементов, если устройство перевернуто горизонтально (Альбомная ориентация) */
+@media screen and (max-width: 56.25em) and (orientation: landscape) {
+    .orientation-warning { display: flex; }
+    .main-header, .content-wrapper, .store-wrapper, .price-page-wrapper, .splash-screen, .sidebar-wrapper, .site-footer { display: none !important; }
+}
+@media (max-width: 80em) { .product-grid { grid-template-columns: repeat(4, 1fr); } }
+@media (max-width: 63.75em) { .logo-and-burger { display: none !important; } .header-bottom { padding-left: 0; gap: 0; } }
+/* ===============================
+   МОБИЛЬНАЯ ВЕРСИЯ (ДО 768px)
+=============================== */
+@media (max-width: 48em) {
+    /* Отступ снизу страницы, чтобы контент не перекрывался нижней панелью вкладок (55px + безопасная зона) */
+    body { padding-bottom: calc(55px + env(safe-area-inset-bottom)); } 
+    
+    /* Внутренние отступы мобильного хедера (15px по бокам) */
+    .header-container { padding: max(2px, env(safe-area-inset-top)) 15px 0 15px; position: relative; z-index: 2; }
+    .header-bottom { padding-bottom: 0; justify-content: center; } 
+    
+    .main-header {
+        --scroll-progress: 0; position: -webkit-sticky; position: sticky; top: -1px; z-index: 1000;
+        padding-bottom: calc(35px - (28px * var(--scroll-progress)));
+        /* Радиус закругления нижних углов хедера (липкой шапки) на смартфонах */
+        border-bottom-left-radius: 32px; border-bottom-right-radius: 32px; 
+    }
+    .main-header::after {
+        content: ''; position: absolute; top:0; left:0; width:100%; height:100%; background: white;
+        opacity: var(--scroll-progress); 
+        /* Радиус закругления подложки, появляющейся при скролле хедера */
+        border-bottom-left-radius: 32px; border-bottom-right-radius: 32px;
+        z-index: 1; box-shadow: 0 4px 15px rgba(0,0,0, calc(0.05 * var(--scroll-progress)));
+    }
+    .search-input {
+        background: linear-gradient(rgba(128, 128, 128, calc(0.1 * var(--scroll-progress))), rgba(var(--brand-rgb), calc(0.08 * var(--scroll-progress)))), white;
+        border: 1px solid rgba(0,0,0, calc(0.05 * var(--scroll-progress)));
+    }
+    
+    .top-menu, .location, .contact-phone { display: none; }
+    .header-top { height: 0; margin: 0; display: none; }
+    .sidebar-wrapper, .overlay { display: none !important; }
+    
+    /* Внутренние отступы основного контента на смартфонах */
+    .content-wrapper { padding: 0; } 
+    /* Внутренние отступы страницы прайса на смартфонах (16px везде) */
+    .price-page-wrapper { padding: 16px; }
+    
+    /* БАННЕРЫ МОБИЛЬНЫЕ (Карусель 2:1) */
+    .desktop-banners-section { display: none; }
+    /* Отступы баннера сверху (6px) и снизу (0px) на мобильной */
+    .mobile-banners-section { display: block; width: 100%; aspect-ratio: 2 / 1; margin-top: 6px; margin-bottom: 0px; overflow: hidden; }  
+    .m-banner-track { display: flex; width: 100%; height: 100%; overflow-x: auto; overflow-y: hidden; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+    .m-banner-track::-webkit-scrollbar { display: none; }
+    /* Боковые отступы (padding: 0 16px) слайда баннера, чтобы он не прилипал к краям экрана */
+    .m-banner-slide { flex: 0 0 100%; height: 100%; scroll-snap-align: start; display: block; padding: 0 16px; } 
+    /* Радиус закругления углов картинок мобильного баннера (16px) */
+    .m-banner-slide img { width: 100%; height: 100%; object-fit: cover; display: block; border-radius: 16px; } 
+    /* Радиус закругления заглушки мобильного баннера (16px) и расстояние (gap) между текстами в ней */
+    .m-banner-slide .banner-placeholder { width: 100%; height: 100%; background: #cccccc; color: #555; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; line-height: normal; gap: 8px; border-radius: 16px; } 
+    /* Размер шрифта текста в заглушке мобильного баннера */
+    .banner-placeholder span { font-size: 16px; }
+    /* Размер шрифта (24px) и жирность цифры в заглушке мобильного баннера */
+    .banner-placeholder .b-number { font-size: 24px; font-weight: bold; opacity: 0.4; }
+    /* МАНДАРИНОВЫЕ КНОПКИ В ХЕДЕРЕ */
+    /* Расстояние между круглыми кнопками (мандаринами) в мобильном меню (gap: 70px), и смещение вниз (-25px) */
+    .mobile-mandarin-nav { 
+        display: flex !important;
+        justify-content: center; 
+        gap: 70px; 
+        position: absolute; 
+        bottom: -25px; 
+        left: 0; 
+        width: 100%;
+        opacity: calc(1 - var(--scroll-progress)); 
+        transition: opacity 0.1s;
+        z-index: 5;
+    }
+    
+    /* Отступ (gap) между картинкой мандарина и текстом под ней */
+    .mandarin-btn { 
+        display: flex; 
+        flex-direction: column; 
+        align-items: center; 
+        text-decoration: none; 
+        color: rgba(255, 255, 255, 0.9); 
+        gap: 0px;
+        transition: transform 0.1s;
+    }
+    
+    .mandarin-btn:active {
+        transform: scale(0.9); 
+    }
+    /* Размер самой круглой иконки (мандаринки) 28x28px и её радиус закругления (0px если PNG) */
+    .mandarin-btn img { 
+        width: 28px;  
+        height: 28px; 
+        object-fit: contain; 
+        border-radius: 0px; 
+        box-shadow: 0 0px 0px rgba(0,0,0,0.1); 
+    }
+    
+    /* Размер шрифта (10px) и толщина (500) подписи под круглой кнопкой-мандарином */
+    .mandarin-btn span { 
+        font-size: 10px; 
+        font-weight: 500; 
+        letter-spacing: 0.5px;
+    }
+    
+    /* СЕТКА ТОВАРОВ МОБИЛКА */
+    /* Отступы сетки товаров, и расстояние между картинками карточек (gap: 6px) */
+    .product-grid { grid-template-columns: repeat(2, 1fr); padding: 0 0px; gap: 6px; } 
+    /* Радиус закругления углов карточек товаров на смартфонах (16px) */
+    .product-card { border-radius: 16px; } 
+    .card-img-wrapper { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+    .card-img-wrapper::-webkit-scrollbar { display: none; }
+    .prod-img { position: static; opacity: 1 !important; flex: 0 0 100%; scroll-snap-align: start; }
+    /* ЗАГОЛОВОК КАТАЛОГА НА ГЛАВНОЙ (Только для телефонов) */
+    /* Размер шрифта(19px), толщина (650), отступы сверху/снизу (12px) и слева (16px) заголовка сетки карточек */
+    .mobile-catalog-title { 
+        display: block; 
+        font-size: 19px; 
+        font-weight: 650; 
+        color: var(--brand-text-color); 
+        margin-top: 6px; 
+        margin-bottom: 6px; 
+        padding-left: 16px; 
+    }
+    
+    /* СТРАНИЦА ТОВАРА (store.php) МОБИЛКА */
+    /* Обнуление крайних отступов контейнера товара на мобильной */
+    .store-wrapper { padding: 0; } 
+    /* Расстояние между фото галереей и описанием на мобилках (gap: 0px), боковые отступы (0px) */
+    .product-page-layout { flex-direction: column; gap: 0px; padding: 0 16px; margin-top: 6px; } 
+    
+    .product-gallery { max-width: 100% !important; width: 100%; flex: 1 1 100%; display: block; height: auto; max-height: none; min-height: 0; } 
+    
+    .main-img-box, .gallery-thumbs-vertical, .desktop-contacts, .book-btn { display: none !important; }
+    /* Размер шрифта, отступ сверху (10px) и боковые отступы (16px) названия товара на телефонах */
+    .product-title { font-size: 22px; margin-top: 10px; padding: 0 16px; }
+    /* Внутренние боковые отступы для цены и описания на мобилках (16px) */
+    .product-params-row { padding: 0 16px; }
+    .product-desc { padding: 0 16px; }
+    .product-price-big.new-price { margin-left: 16px; }
+    .product-price-big { margin-left: 16px; } /* отступ оранжевой цены мобильная версия */
+    /* Рамка 2:3 для свайпа - радиус закруглений мобильной фотогалереи (16px) */
+    .mobile-gallery-swipe { 
+        display: flex; flex: 1; min-width: 100%; aspect-ratio: 2/3; 
+        background: #eee; border-radius: 16px; 
+        overflow-x: auto; overflow-y: hidden; 
+        scroll-snap-type: x mandatory; scroll-behavior: smooth; 
+        -webkit-overflow-scrolling: touch; scrollbar-width: none; 
+    }
+    .m-img-pinch-wrap { flex: 0 0 100%; height: 100%; scroll-snap-align: start; overflow: hidden; position: relative; }
+    .m-img-pinch-wrap img { width: 100%; height: 100%; object-fit: cover; }
+
+    /* Обнуление внутренних отступов блока "похожие товары" внизу страницы товара на телефонах */
+    .similar-products-block { padding: 0px 0 0 0; }
+    .similar-title { padding-left: 0px; }
+    /* МЕГА-КНОПКА СВЯЗИ НА СТРАНИЦЕ ТОВАРА */
+    /* Отступы сверху/снизу (20px), внутренние отступы(16 20), шрифт(16), толщина (bold) и радиус закругления (50px) Большой кнопки */
+    .mobile-mega-contact-btn {
+        display: block;
+        width: 60%;
+        margin: 20px auto; 
+        margin-top: 20px;
+        margin-bottom: 20px;
+        padding: 16px 20px;
+        background: var(--brand-gradient);
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        text-align: center;
+        border: none;
+        border-radius: 50px;
+        box-shadow: 0 4px 15px rgba(255, 69, 0, 0.3);
+        cursor: pointer;
+        transition: transform 0.1s, box-shadow 0.2s;
+    }
+    .mobile-mega-contact-btn:active {
+        transform: scale(0.97);
+        box-shadow: 0 2px 8px rgba(255, 69, 0, 0.2);
+    }
+    /* Футер мобилки */
+    /* Внутренние отступы верхней части подвала на мобильной (20px сверху/снизу, 15px по бокам) */
+    .footer-top { flex-direction: column; align-items: flex-start; padding: 20px 15px; }
+    /* Размер шрифта контактных данных в подвале на телфонах (11px) */
+    .footer-contact-item { font-size: 11px; }
+    .footer-badge { display: none; }
+    /* Отступ сверху и снизу для бейджа Яндекса на мобильной (25px) */
+    .mobile-store-badge { display: flex; justify-content: center; width: 100%; margin-top: 15px; margin-bottom: 0px; }
+    /* Закругление углов виджета Яндекс в мобильной версии (8px) */
+    .mobile-store-badge iframe { width: 150px; height: 50px; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.12); display: block; border: none; overflow: hidden; }
+    /* Размер шрифта нижнего копирайта (10px) и отступы сверху/снизу (12px) на устройствах */
+    .footer-bottom { font-size: 10px; padding: 12px 0; }
+    /* МОБИЛЬНАЯ ПАНЕЛЬ И ШТОРКА */
+    /* Внутренние отступы нижней навигационной панели в смартфонах (8px) + защита выреза экрана iOS */
+.mobile-tab-bar {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-top: 1px solid #eaeaea;
+    justify-content: space-around;
+    align-items: center;
+    padding-top: 8px;
+    /* Оставляем только один padding-bottom */
+    padding-bottom: calc(8px + env(safe-area-inset-bottom)); 
+    z-index: 9999;
+    box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+    /* Заставляем браузер всегда держать панель прижатой к физическому низу */
+    transform: translateZ(0);
+    will-change: transform;
+}
+    /* Зазоры между иконкой навигации и текстом (4px), а также размер шрифта подписи (10px) */
+    .tab-item { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 10px; color: #888; transition: color 0.1s; }
+    .tab-item svg { width: 24px; height: 24px; }
+    .tab-item.active { color: var(--brand-text-color) !important; }
+    .tab-item.active svg { stroke-width: 2.5; }
+    .tab-navigator { color: #2AABEE; }
+    
+    .contact-sheet-overlay { display: block; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 9997; opacity: 0; visibility: hidden; transition: 0.3s; }
+    .contact-sheet-overlay.active { opacity: 1; visibility: visible; }
+    /* Впадающая снизу шторка: радиус верхних углов (30px), отступы внутри (15px 20px) + место под нижнюю панель снизу (80px) */
+    .contact-sheet {
+        display: block; position: fixed; bottom: -100%; left: 5%; width: 90%;
+        background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(7px); -webkit-backdrop-filter: blur(7px);
+        border-radius: 30px 30px 0 0; padding: 15px 50px calc(70px + env(safe-area-inset-bottom));
+        z-index: 9998; transition: bottom 0.3s cubic-bezier(0.175, 0.885, 0.32, 1); box-shadow: 0 -5px 20px rgba(0,0,0,0.1);
+    }
+    .contact-sheet.active { bottom: 0; }
+    /* Отступ под зоной закрытия шторки свайпом вниз (margin 15px, padding 5px) */
+    .sheet-close-zone { padding-bottom: 0px; margin-bottom: 15px; cursor: pointer; }
+    /* Размер шрифта заголовка "Способ связи" в выпадающей шторке (16px) */
+    .sheet-title { font-size: 16px; text-align: center; color: #333; }
+    /* Верхняя микро-ручка "потяни вниз" в шторке: радиус (3px) и отступы (margin) */
+    .sheet-handle { width: 40px; height: 5px; background: rgba(0,0,0,0.15); border-radius: 3px; margin: 0 auto 10px; }
+    /* Отступ между иконкой и текстом внутри кнопки (gap: 12px), паддинги (10px 20px), радиус кнопок (50px), размер шрифта и толщина в выпадающей шторке */
+    .sheet-btn { display: flex; justify-content: flex-start; align-items: center; gap: 12px; width: 100%; max-width: 280px; padding: 10px 20px; margin: 0 auto 8px auto; border-radius: 50px; color: white; font-weight: 600; font-size: 14px; }
+    .max-btn { background: linear-gradient(90deg, #4C6AFE 0%, #9F4ADB 100%); box-shadow: 0 4px 10px rgba(159, 74, 219, 0.2); } .tg-btn { background: #2AABEE; } .wa-btn { background: #25D366; } .call-btn { background: #333; }
+}
+
